@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <title>OCR with tesseract and opencv</title>
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+      <script>
+         $(document).ready(function() {
+           $("select").formSelect();
+         });
+      </script>
+   </head>
+   <body>
+      <center>
+         <h1> OCR with <a href="https://opensource.google.com/projects/tesseract" target="_blank">Tesseract</a> and <a href="https://opencv.org/" target="_blank">OpenCV</a> </h1>
+      </center>
+      <center>
+        <div style="width:75%; display: inline-block">
+          <form action="upload" method="post" enctype="multipart/form-data" class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <div class="input-field col s3"></div>
+                    <div class="input-field col s6">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                              <span>    File    </span>
+                              <input type="file" name="image">
+                            </div>
+                            <div class="file-path-wrapper">
+                              <input class="file-path validate" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-field col s3"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                  <label for="minConfidence">The minimum probability of a detected text region</label>
+                  <input name="minConfidence" type="number" value="{% if lastsettings %}{{lastsettings.minConfidence}}{% else %}0.5{% endif %}" min="0" max="1" step="0.01"/>
+                </div>
+                <div class="input-field col s6">
+                  <label for="padding" >The amount of padding to add to each ROI border (if you find that your OCR result is incorrect)</label>
+                  <input name="padding" type="number" value="{% if lastsettings %}{{lastsettings.padding}}{% else %}0.0{% endif %}" step="0.01" min="0" max="1"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                  <label for="width">The width the image will be resized to prior to being passed through the EAST text detector</label>
+                  <input name="width" type="number" value="{% if lastsettings %}{{lastsettings.width}}{% else %}320{% endif %}" step="32" min="32"/>
+                </div>
+                <div class="input-field col s6">
+                  <label for="oem">OCR Engine Mode, controls the type of algorithm used by Tesseract</label>
+                  <input name="oem" type="number" value="{% if lastsettings %}{{lastsettings.oem}}{% else %}1{% endif %}" min="0" max="3" step="1"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                  <label for="height">Same as the width, but for the height</label>
+                  <input name="height" type="number" value="{% if lastsettings %}{{lastsettings.height}}{% else %}320{% endif %}" step="32" min="32" />
+                </div>
+                <div class="input-field col s6">
+                  <label for="psm">Controls the automatic Page Segmentation Mode used by Tesseract</label>
+                  <input name="psm" type="number" value="{% if lastsettings %}{{lastsettings.psm}}{% else %}7{% endif %}" min="0" max="13" step="1"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3"></div>
+            <div class="input-field col s6">
+                <label for="language">The language Tesseract will use</label>
+                <br>
+                <select name="language">
+                  <option value="eng" {% if lastsettings %}{% if lastsettings.language == 'eng' %}selected {% endif %}{% else %} selected {% endif %}>English</option>
+                  <option value="deu" {% if lastsettings %}{% if lastsettings.language == 'deu' %}selected {% endif %}{% endif %}>German</option>
+                  <option value="equ" {% if lastsettings %}{% if lastsettings.language == 'equ' %}selected {% endif %}{% endif %}>Math / equation detection</option>
+                  <option value="osd" {% if lastsettings %}{% if lastsettings.language == 'osd' %}selected {% endif %}{% endif %}>Orientation and script detection</option>
+                </select>
+                <div class="input-field col s3"></div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                  <input type="submit" value="Upload your image" class="btn btn-primary">
+                </div>
+          </form>
+        </div>
+      </center>
+      <br><br><br>
+      <center>
+         {% if text %}
+         <h3> {{text}} </h3> 
+         <br><br>
+         {% endif %}
+         {% if images %}
+         {% for image in images %}
+         <img src='{{image}}'/>
+         <br>
+         {% endfor %}
+         {% endif %}
+      </center>
+   </body>
+</html>

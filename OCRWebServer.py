@@ -228,4 +228,4 @@ def remove_contents(path):
             os.remove(full_path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0') #to make it visible 10.100.x.x only for 10.100.0.0 /16 
+    app.run(host='0.0.0.0',port=5000) #to make it visible 10.100.x.x only for 10.100.0.0 /16 

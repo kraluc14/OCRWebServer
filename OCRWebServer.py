@@ -8,6 +8,8 @@ import os
 import pprint
 import cv2
 import uuid
+import json
+
 
 app = Flask(__name__,static_url_path='/static')#to find images
 app.secret_key = 'testing'
@@ -43,6 +45,22 @@ def upload_file():
             return ocr_detection(os.path.join(app.config['UPLOAD_FOLDER'], filename),float(request.form.get("minConfidence", False)),int(request.form.get("width", False)),int(request.form.get("height", False)),float(request.form.get("padding", False)),request.form.get("language", False),int(request.form.get("oem", False)), int(request.form.get("psm", False)))
 
     return render_template('index.html')
+
+@app.route('/ocrjson', methods=['GET','POST'])
+def ocrjson():
+
+    params = json.loads(request.form.get("json", False))
+    if len(params) < 7:
+        return 'not all parameters were specified'
+    for key in params.keys():
+        if params[key] == None:
+            return 'at least one parameter is None'
+
+    file = request.files['image']
+    if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return ocr_detection(os.path.join(app.config['UPLOAD_FOLDER'], filename),float(params["minConfidence"]),int(params["width"]),int(params["height"]),float(params["padding"]),params["language"],int(params["oem"]), int(params["psm"]),isJson=True)
 
 def allowed_file(filename):
     ''' Check if the file extension is allowed '''
@@ -107,7 +125,7 @@ def decode_predictions(scores, geometry, minConfidence):
 	# return a tuple of the bounding boxes and associated confidences
 	return (rects, confidences)
 
-def ocr_detection(filename, minConfidence, width, height, padding, language, oem, psm):
+def ocr_detection(filename, minConfidence, width, height, padding, language, oem, psm, isJson=False):
     # load the input image and grab the image dimensions
     image = cv2.imread(filename)
     orig = image.copy()
@@ -195,8 +213,6 @@ def ocr_detection(filename, minConfidence, width, height, padding, language, oem
     lastsettings = {'minConfidence':minConfidence, 'width':width, 'height':height, 'padding':padding, 'language':language, 'oem' : oem, 'psm':psm}
     # loop over the results
     for ((startX, startY, endX, endY), text) in results:
-        # display the text OCR'd by Tesseract
-        #print("{}\n".format(text))
     
         # strip out non-ASCII text so we can draw the text on the image
         # using OpenCV, then draw the text and a bounding box surrounding
@@ -207,19 +223,17 @@ def ocr_detection(filename, minConfidence, width, height, padding, language, oem
         #print(text)
         #print(output)
         cv2.rectangle(output, (startX, startY), (endX, endY),(0, 0, 255), 2)
-        cv2.putText(output, text, (startX, startY - 20),
-            cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+        cv2.putText(output, text, (startX, startY - 20), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
 
         
         filepath = app.config['IMAGE_FOLDER'] + str(uuid.uuid4().hex) + '.png'
         cv2.imwrite(filepath, output)
         images.append(filepath)
 
-        # show the output image
-        #cv2.imshow("Text Detection", output)
-        #cv2.waitKey(0)
-    pprint.pprint(lastsettings)
-    return render_template('index.html', text=textToShow, images=images, lastsettings=lastsettings)
+    if isJson:
+        return textToShow
+    else:
+        return render_template('index.html', text=textToShow, images=images, lastsettings=lastsettings)
 
 def remove_contents(path):
     for c in os.listdir(path):

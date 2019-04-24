@@ -15,7 +15,7 @@ app = Flask(__name__,static_url_path='/static')#to find images
 app.secret_key = 'testing'
 #str(uuid.uuid4().hex)
 
-EAST_TEXT_DETECTOR = '/home/lukas/OCR_Project/east-text-detection/frozen_east_text_detection.pb'
+EAST_TEXT_DETECTOR = 'east-text-detection/frozen_east_text_detection.pb'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 UPLOAD_FOLDER = os.path.basename('uploads')
 IMAGE_FOLDER = 'static/images/'

@@ -1,13 +1,9 @@
-python3 -m pip install flask
+python3 -m pip install flask -y
 
-python3 -m pip install imutils
+python3 -m pip install imutils -y
 
-sudo apt-get install tesseract-ocr
+sudo apt-get install tesseract-ocr -y
 
-python3 -m pip install pytesseract
+python3 -m pip install pytesseract -y
 
-python3 -m pip install opencv-python
-
-python3 -m pip install cv2
-
-sudo apt-get install python3-opencv
+python3 -m pip install opencv-python -y

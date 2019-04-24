@@ -12,8 +12,7 @@ import json
 
 
 app = Flask(__name__,static_url_path='/static')#to find images
-app.secret_key = 'testing'
-#str(uuid.uuid4().hex)
+app.secret_key = 'cooleschule'
 
 EAST_TEXT_DETECTOR = 'east-text-detection/frozen_east_text_detection.pb'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -24,7 +23,6 @@ app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    #[session.pop(key) for key in list(session.keys())]
     return render_template('index.html')
 
 @app.route('/upload', methods=['GET','POST'])

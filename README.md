@@ -5,7 +5,7 @@ This server provedes a webinterface which takes a picture and some OCR arguments
 
 ## Requirements
 
-pip install Flask
+python3 -m pip install Flask
 
 python3 -m pip install imutils
 

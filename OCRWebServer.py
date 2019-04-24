@@ -10,62 +10,75 @@ import cv2
 import uuid
 import json
 
-
 app = Flask(__name__,static_url_path='/static')#to find images
 app.secret_key = 'cooleschule'
 
-EAST_TEXT_DETECTOR = 'east-text-detection/frozen_east_text_detection.pb'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+EAST_TEXT_DETECTOR = 'east-text-detection/frozen_east_text_detection.pb' #location of the east text detection
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif']) #allowed extension
 UPLOAD_FOLDER = os.path.basename('uploads')
 IMAGE_FOLDER = 'static/images/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])# a method with the @app.route annotation will create an endpoint, where methods can be defined. Best practise route = method name
 def index():
     return render_template('index.html')
 
 @app.route('/upload', methods=['GET','POST'])
-def upload_file():
+def upload():
 
-    if 'image' not in request.files:
+    if 'image' not in request.files: #checking if there is an image in the post request. request.files returns the send files
             flash('No file part')
             return redirect('/')
 
-    file = request.files['image']
+    file = request.files['image'] #get the existing file
     
-    if file.filename == '':
+    if file.filename == '': #check for an invalid filename
             flash('No selected file')
             return redirect('/')
-    if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return ocr_detection(os.path.join(app.config['UPLOAD_FOLDER'], filename),float(request.form.get("minConfidence", False)),int(request.form.get("width", False)),int(request.form.get("height", False)),float(request.form.get("padding", False)),request.form.get("language", False),int(request.form.get("oem", False)), int(request.form.get("psm", False)))
+    if file and allowed_file(file.filename): #check if the filetype is allowed (could be more sophisticated with a magic byte checker)
+            filename = secure_filename(file.filename) #the secure_filename method checks for backslashes, other pathchanging and illeagal chars (can without it, we can write files to wherever we want ex ../.. etc )
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)) #save the file into our upload folder
+            return ocr_detection(os.path.join(app.config['UPLOAD_FOLDER'], #call the ocr method with given arguments
+             filename),float(request.form.get("minConfidence", False)), #request form elements by name, and return F
+             int(request.form.get("width", False)),
+             int(request.form.get("height", False)),
+             float(request.form.get("padding", False)),
+             request.form.get("language", False),
+             int(request.form.get("oem", False)),
+             int(request.form.get("psm", False)))
 
     return render_template('index.html')
 
 @app.route('/ocrjson', methods=['GET','POST'])
 def ocrjson():
 
-    params = json.loads(request.form.get("json", False))
+    params = json.loads(request.form.get("json", False)) #load json into python 
     if len(params) < 7:
         return 'not all parameters were specified'
     for key in params.keys():
         if params[key] == None:
             return 'at least one parameter is None'
 
-    file = request.files['image']
+    file = request.files['image'] #get the image
     if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return ocr_detection(os.path.join(app.config['UPLOAD_FOLDER'], filename),float(params["minConfidence"]),int(params["width"]),int(params["height"]),float(params["padding"]),params["language"],int(params["oem"]), int(params["psm"]),isJson=True)
+            return ocr_detection(os.path.join(app.config['UPLOAD_FOLDER'], filename), #call ocr method with json parameters
+            float(params["minConfidence"]),
+            int(params["width"]),
+            int(params["height"]),
+            float(params["padding"]),
+            params["language"],
+            int(params["oem"]),
+            int(params["psm"]),isJson=True)
 
 def allowed_file(filename):
     ''' Check if the file extension is allowed '''
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS #still not flawless e.g. file.pdf.exe would count as pdf
 
-def decode_predictions(scores, geometry, minConfidence):
+def decode_predictions(scores, geometry, minConfidence): 
 	# grab the number of rows and columns from the scores volume, then
 	# initialize our set of bounding box rectangles and corresponding
 	# confidence scores
@@ -203,7 +216,6 @@ def ocr_detection(filename, minConfidence, width, height, padding, language, oem
         # sort the results bounding box coordinates from top to bottom
     results = sorted(results, key=lambda r:r[0][1])
 
-    #return text
     remove_contents(app.config['IMAGE_FOLDER'])
 
     images = []
@@ -233,11 +245,11 @@ def ocr_detection(filename, minConfidence, width, height, padding, language, oem
     else:
         return render_template('index.html', text=textToShow, images=images, lastsettings=lastsettings)
 
-def remove_contents(path):
+def remove_contents(path): #method to remove all created images out of the static folder
     for c in os.listdir(path):
         full_path = os.path.join(path, c)
         if os.path.isfile(full_path):
             os.remove(full_path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000,threaded=True, debug=False) #to make it visible 10.100.x.x only for 10.100.0.0 /16 
+    app.run(host='0.0.0.0',port=5000,threaded=True, debug=False) #to make it visible 10.100.x.x only for 10.100.0.0 /16 but somehow only works in start.sh

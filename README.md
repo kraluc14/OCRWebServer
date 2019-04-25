@@ -21,4 +21,4 @@ sudo apt-get install python3-opencv
 
 ## Postman
 
-![postman[()
+![postman](https://github.com/kraluc14/OCRWebServer/blob/master/postman.png)
